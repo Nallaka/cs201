@@ -432,9 +432,3 @@ T CDA<T>::Select(int k) {
     return kthSmallest(array, 0, size - 1, k);
 }
 
-void foo(CDA<int> x) {
-    for (int i=0; i<x.Length()/2; i++)
-        x[i] = x[x.Length()/2+i];
-    // X => "6 7 8 9 10 15 19 6 7 8 9 10 15 19 11"
-    for (int i=0; i< x.Length();i++) cout << x[i] << " ";  cout << endl;
-}
