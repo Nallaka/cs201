@@ -63,12 +63,43 @@ public:
     }
 
     void merge(FibHeap<T> &H2) {
-        Node<T>* currNodeH2 = H2->head;
-        while (currNodeH2 != H2.tail) {
-            this->tail->right = currNodeH2;
-            currNodeH2->left = this->tail;
-            this->tail = currNodeH2;
+        this->tail->right = H2.head;
+        this->head->left = H2.tail;
+        H2.head->left = this->tail;
+        if (this->min->key > H2.min->key) {
+            this->min = H2.min;
         }
+        this->tail = H2.tail;
+        this->n += H2.n;
+    }
+
+    void extractMin() {
+        auto heapMin = this->min;
+        if (heapMin != nullptr) {
+            auto currNode = heapMin->child;
+            while (currNode != nullptr) {
+                this->tail->right = currNode;
+                currNode->parent = nullptr;
+                currNode->left = this->tail;
+                currNode->right = this->head;
+                this->tail = currNode;
+                currNode->degree--;
+                currNode = currNode->right;
+            }
+            heapMin->left->right = heapMin->right;
+            heapMin->right->left = heapMin->left;
+            if (heapMin == heapMin->right) {
+                this->min = nullptr;
+            } else {
+                this->min = heapMin->right;
+                this->consolidate();
+            }
+            this->n--;
+        }
+    }
+
+    void consolidate() {
+
     }
 };
 
@@ -78,6 +109,10 @@ int main() {
     heap.insert(5);
     heap.insert(6);
     heap.insert(7);
-    heap.insert(2);
+    FibHeap<int> heap2 = FibHeap<int>();
+    heap2.insert(1);
+    heap2.insert(2);
+    heap2.insert(3);
+    heap.merge(heap2);
     cout << "end";
 }
