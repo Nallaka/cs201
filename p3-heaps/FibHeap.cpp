@@ -67,6 +67,7 @@ public:
         this->tail->right = H2.head;
         this->head->left = H2.tail;
         H2.head->left = this->tail;
+        H2.tail->right = this->head;
         if (this->min->key > H2.min->key) {
             this->min = H2.min;
         }
@@ -100,7 +101,58 @@ public:
     }
 
     void consolidate() {
+        Node<T>* A[] = new Node<T>*[50];
+        for (int i = 0; i < 50; i++) {
+            A[i] = nullptr;
+        }
+        auto currNode = this->head;
+        while (currNode->right != this->head) {
+            auto x = currNode;
+            int d = x->degree;
+            while (A[d] != nullptr) {
+                auto y = A[d];
+                if (x->key > y->key) {
+                    auto temp = x;
+                    x = y;
+                    y = temp;
+                }
+                this->fibHeapLink(y, x);
+                A[d] = nullptr;
+                d++;
+            }
+            A[d] = x;
+            currNode = currNode->right;
+        }
+        this->min = nullptr;
+        for (int i = 0; i < 50; i++) {
+            if (A[i] != nullptr) {
+                if (this->min == nullptr) {
+                    this->head = A[i];
+                    this->tail = A[i];
+                    this->head->left = A[i];
+                    this->head->right = A[i];
+                    this->min = A[i];
+                } else {
+                    this->tail->right = A[i];
+                    A[i]->left = this->tail;
+                    A[i]->right = this->head;
+                    this->tail = A[i];
+                    if (A[i]->key < this->min->key) {
+                        this->min = A[i];
+                    }
+                }
+            }
+        }
 
+    }
+
+    void fibHeapLink(Node<T>* y, Node<T>* x) {
+        y->right->left = y->left;
+        y->left->right = y->right;
+        y->sibling = x->child;
+        x->child = y;
+        y->parent = x;
+        x->degree++;
     }
 };
 
