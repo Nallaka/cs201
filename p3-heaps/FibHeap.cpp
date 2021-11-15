@@ -10,6 +10,7 @@ struct Node {
     Node* child = this;
     Node* left = this;
     Node* right = this;
+    Node* sibling = this;
     T key;
     int degree = 0;
 
