@@ -6,11 +6,11 @@ using namespace std;
 
 template <class T>
 struct Node {
-    Node* parent = this;
-    Node* child = this;
+    Node* parent = nullptr;
+    Node* child = nullptr;
     Node* left = this;
     Node* right = this;
-    Node* sibling = this;
+    Node* sibling = nullptr;
     T key;
     int degree = 0;
 
@@ -101,11 +101,52 @@ public:
     }
 
     void consolidate() {
-        Node<T>* A[] = new Node<T>*[50];
-        for (int i = 0; i < 50; i++) {
-            A[i] = nullptr;
+        Node<T> *A[50];
+        for (auto & i : A) {
+            i = nullptr;
         }
-        auto currNode = this->head;
+        auto w = this->head;
+        do {
+            auto x = w;
+            int d = x->degree;
+            while(A[d] != nullptr) {
+                auto y = A[d];
+                if (x->key > y->key) {
+                    auto *temp = x;
+                    x = y;
+                    y = temp;
+                }
+                fibHeapLink(y, x);
+                A[d] = nullptr;
+                d++;
+            }
+            A[d] = x;
+            w = w->right;
+        } while(w != this->head);
+        this->min = nullptr;
+
+        for (Node<T>  *i : A) {
+            if (i != nullptr) {
+                if (this->min == nullptr) {
+                    this->head = i;
+                    this->tail = i;
+                    this->head->right = this->head;
+                    this->head->left = this->head;
+                    this->head->parent = nullptr;
+                    this->min = i;
+                } else {
+                    this->tail->right = i;
+                    this->head->left = i;
+                    i->left = this->tail;
+                    i->right = this->head;
+                    this->tail = i;
+                    if (i->key < this->min->key) {
+                        this->min = i;
+                    }
+                }
+            }
+        }
+/*        auto currNode = this->head;
         while (currNode->right != this->head) {
             auto x = currNode;
             int d = x->degree;
@@ -142,17 +183,24 @@ public:
                     }
                 }
             }
-        }
+        }*/
 
     }
 
     void fibHeapLink(Node<T>* y, Node<T>* x) {
+        y->left->right = y->right;
         y->right->left = y->left;
+        y->parent = x;
+        y->sibling = x->child;
+        x->child = y;
+        x->degree++;
+
+        /*y->right->left = y->left;
         y->left->right = y->right;
         y->sibling = x->child;
         x->child = y;
         y->parent = x;
-        x->degree++;
+        x->degree++;*/
     }
 };
 
@@ -162,10 +210,6 @@ int main() {
     heap.insert(5);
     heap.insert(6);
     heap.insert(7);
-    FibHeap<int> heap2 = FibHeap<int>();
-    heap2.insert(1);
-    heap2.insert(2);
-    heap2.insert(3);
-    heap.merge(heap2);
+    heap.consolidate();
     cout << "end";
 }
