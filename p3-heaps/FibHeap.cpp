@@ -36,6 +36,14 @@ public:
         this->min = nullptr;
     }
 
+    FibHeap(T k[], int s) {
+        for (auto i: k) {
+            this->insert(i);
+        }
+
+        this->consolidate();
+    }
+
     T peekKey() {
         return this->min->key;
     }
@@ -210,6 +218,7 @@ int main() {
     heap.insert(5);
     heap.insert(6);
     heap.insert(7);
+    heap.insert(8);
     heap.consolidate();
     cout << "end";
 }
