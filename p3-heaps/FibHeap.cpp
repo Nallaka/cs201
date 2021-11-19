@@ -84,7 +84,33 @@ public:
     }
 
     void extractMin() {
-        auto heapMin = this->min;
+        auto z = this->min;
+
+        if(z != nullptr) {
+            auto x = z->child;
+            while (x != nullptr) {
+                this->tail->right = x;
+                this->head->left = x;
+                x->right = this->head;
+                x->left = this->tail;
+                this->tail = x;
+                auto *temp = x->sibling;
+                x->sibling = nullptr;
+                x = temp;
+            }
+            z->left->right = z->right;
+            z->right->left = z->left;
+
+            if (z == z->right) {
+                this->min = nullptr;
+            } else {
+                this->min = z->right;
+                this->consolidate();
+            }
+
+            this->n--;
+        }
+        /*auto heapMin = this->min;
         if (heapMin != nullptr) {
             auto currNode = heapMin->child;
             while (currNode != nullptr) {
@@ -105,7 +131,7 @@ public:
                 this->consolidate();
             }
             this->n--;
-        }
+        }*/
     }
 
     void consolidate() {
@@ -113,7 +139,9 @@ public:
         for (auto & i : A) {
             i = nullptr;
         }
+
         auto w = this->head;
+
         do {
             auto x = w;
             int d = x->degree;
@@ -131,6 +159,7 @@ public:
             A[d] = x;
             w = w->right;
         } while(w != this->head);
+
         this->min = nullptr;
 
         for (Node<T>  *i : A) {
@@ -148,6 +177,7 @@ public:
                     i->left = this->tail;
                     i->right = this->head;
                     this->tail = i;
+
                     if (i->key < this->min->key) {
                         this->min = i;
                     }
