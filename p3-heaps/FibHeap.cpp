@@ -2,6 +2,7 @@
 // Created by MIthul Nallaka on 11/9/21.
 //
 #include "iostream"
+#include "Heap.cpp"
 using namespace std;
 
 template <class T>
@@ -21,6 +22,16 @@ struct Node {
         this->right = right;
         this->key = key;
     }
+
+    ~Node() {
+        this->parent = nullptr;
+        this->child = nullptr;
+        this->left = nullptr;
+        this->right = nullptr;
+        this->sibling = nullptr;
+        this->key = nullptr;
+        this->degree = nullptr;
+    }
 };
 
 template <class T>
@@ -37,11 +48,21 @@ public:
     }
 
     FibHeap(T k[], int s) {
-        for (auto i: k) {
-            this->insert(i);
+        for (int i = 0; i < s; i++) {
+            this->insert(k[i]);
         }
 
         this->consolidate();
+    }
+
+    ~FibHeap() {
+        this->head = nullptr;
+        this->tail = nullptr;
+        this->min = nullptr;
+    }
+
+    FibHeap& operator=(FibHeap<T> other) {
+
     }
 
     T peekKey() {
@@ -81,9 +102,10 @@ public:
         }
         this->tail = H2.tail;
         this->n += H2.n;
+
     }
 
-    void extractMin() {
+    T extractMin() {
         auto z = this->min;
         if (z != nullptr) {
             auto x = z->child;
@@ -94,7 +116,9 @@ public:
                 x->right = this->head;
                 this->tail = x;
                 x->parent = nullptr;
+                auto temp = x;
                 x = x->sibling;
+                temp->sibling = nullptr;
             }
 
             if (this->min == this->head) {
@@ -116,8 +140,9 @@ public:
             }
 
             this->n--;
-
         }
+
+        return z->key;
         /*auto heapMin = this->min;
         if (heapMin != nullptr) {
             auto currNode = heapMin->child;
@@ -153,8 +178,9 @@ public:
         do {
             auto x = w;
             int d = x->degree;
+            auto y = A[d];
             while(A[d] != nullptr) {
-                auto y = A[d];
+                y = A[d];
                 if (x->key > y->key) {
                     auto *temp = x;
                     x = y;
@@ -165,7 +191,7 @@ public:
                 d++;
             }
             A[d] = x;
-            w = w->right;
+            w = x->right;
         } while(w != this->head);
 
         this->min = nullptr;
@@ -234,19 +260,31 @@ public:
     }
 
     void fibHeapLink(Node<T>* y, Node<T>* x) {
-        if (this->head == y) {
+        /*if (this->head == y) {
             this->head = y->right;
+            this->tail->right = this->head;
         }
 
         if (this->tail == y) {
             this->tail = y->left;
-        }
+            this->head->left = this->tail;
+        }*/
         y->left->right = y->right;
         y->right->left = y->left;
         y->parent = x;
         y->sibling = x->child;
         x->child = y;
         x->degree++;
+
+        if (this->head == y) {
+            this->head = y->right;
+            this->tail->right = this->head;
+        }
+
+        if (this->tail == y) {
+            this->tail = y->left;
+            this->head->left = this->tail;
+        }
 
         /*y->right->left = y->left;
         y->left->right = y->right;
@@ -261,7 +299,7 @@ public:
 
         do {
             cout << "B" << x->degree << endl;
-            cout << x->key;
+            inorder(*x);
             //TODO: Print children Inorder include endl
 
             cout << endl << endl;
@@ -269,14 +307,81 @@ public:
             x = x->right;
         } while (x != this->head);
     }
+
+    void inorder(Node<T> &x) {
+        T key = x.key;
+        cout << x.key << " ";
+
+        if(x.child != nullptr) {
+            inorder(*x.child);
+        }
+        Node<T>* sibling = x.sibling;
+
+        if (sibling != nullptr){
+            inorder(*sibling);
+        }
+    }
 };
 
 
 int main() {
-    FibHeap<int> heap = FibHeap<int>();
-    heap.insert(5);
-    heap.insert(6);
-    heap.insert(7);
-    heap.insert(8);
-    heap.printKey();
+
+    // From the FibHeap lab where we did several operations on this set
+    // Feel free to check output with your own hand-drawn trees
+
+    int ints[] = {6, 2, 10, 7, 5, 1, 11, 9, 3, 4, 8};
+    FibHeap<int> fhInt(ints, 11);
+
+    // B0
+    // 8
+    //
+    // B1
+    // 3 4
+    //
+    // B3
+    // 1 2 7 10 6 9 11 5
+
+    cout << "8.1" << endl;
+    fhInt.printKey();
+    cout << endl;
+
+    // B1
+    // 5 8
+    //
+    // B3
+    // 2 3 9 11 4 7 10 6
+
+    cout << "8.2" << endl;
+    fhInt.extractMin();
+    fhInt.printKey();
+    cout << endl;
+
+    // B2
+    // 6 7 10 22
+    //
+    // B3
+    // 3 5 15 19 8 9 11 4
+
+    cout << "8.3" << endl;
+    fhInt.insert(15);
+    fhInt.insert(19);
+    fhInt.insert(22);
+    fhInt.extractMin();
+    fhInt.printKey();
+    cout << endl;
+
+    // B0
+    // 4
+    //
+    // B1
+    // 9 11
+    //
+    // B3
+    // 5 6 7 10 22 15 19 8
+
+    cout << "8.4" << endl;
+    fhInt.extractMin();
+    fhInt.printKey();
+    cout << endl;
+
 }

@@ -3,4 +3,4 @@ project(cs201)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(cs201 p3-heaps/FibHeap.cpp p3-heaps/FibHeap.h)
+add_executable(cs201 p3-heaps/FibHeap.cpp p3-heaps/Heap.cpp)
