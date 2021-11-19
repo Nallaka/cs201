@@ -28,7 +28,7 @@ class FibHeap {
     Node<T>* head = nullptr;
     Node<T>* tail = nullptr;
     Node<T>* min = nullptr;
-    int n;
+    int n = 0;
 public:
 
     FibHeap() {
@@ -85,19 +85,26 @@ public:
 
     void extractMin() {
         auto z = this->min;
-
-        if(z != nullptr) {
+        if (z != nullptr) {
             auto x = z->child;
             while (x != nullptr) {
                 this->tail->right = x;
                 this->head->left = x;
-                x->right = this->head;
                 x->left = this->tail;
+                x->right = this->head;
                 this->tail = x;
-                auto *temp = x->sibling;
-                x->sibling = nullptr;
-                x = temp;
+                x->parent = nullptr;
+                x = x->sibling;
             }
+
+            if (this->min == this->head) {
+                this->head = this->head->right;
+            }
+
+            if (this->min == this->tail) {
+                this->tail = this->tail->left;
+            }
+
             z->left->right = z->right;
             z->right->left = z->left;
 
@@ -109,6 +116,7 @@ public:
             }
 
             this->n--;
+
         }
         /*auto heapMin = this->min;
         if (heapMin != nullptr) {
@@ -226,6 +234,13 @@ public:
     }
 
     void fibHeapLink(Node<T>* y, Node<T>* x) {
+        if (this->head == y) {
+            this->head = y->right;
+        }
+
+        if (this->tail == y) {
+            this->tail = y->left;
+        }
         y->left->right = y->right;
         y->right->left = y->left;
         y->parent = x;
@@ -240,6 +255,20 @@ public:
         y->parent = x;
         x->degree++;*/
     }
+
+    void printKey() {
+        auto x = this->head;
+
+        do {
+            cout << "B" << x->degree << endl;
+            cout << x->key;
+            //TODO: Print children Inorder include endl
+
+            cout << endl << endl;
+
+            x = x->right;
+        } while (x != this->head);
+    }
 };
 
 
@@ -249,6 +278,5 @@ int main() {
     heap.insert(6);
     heap.insert(7);
     heap.insert(8);
-    heap.consolidate();
-    cout << "end";
+    heap.printKey();
 }
