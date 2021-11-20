@@ -23,6 +23,10 @@ struct Node {
         this->key = key;
     }
 
+    Node<T>(T key) {
+        this->key = key;
+    }
+
     ~Node() {
         this->parent = nullptr;
         this->child = nullptr;
@@ -61,8 +65,60 @@ public:
         this->min = nullptr;
     }
 
-    FibHeap& operator=(FibHeap<T> other) {
+    FibHeap& operator=(const FibHeap<T> &other) {
+        auto x = other.head;
 
+        auto prevNode = new Node<T>(x->key);
+        prevNode->degree = x->degree;
+        this->head = prevNode;
+        this->tail = this->head;
+        this->n = other.n;
+
+        if (other.head == other.min) {
+            this->min = prevNode;
+        }
+
+        this->copy(x, prevNode);
+        x = x->right;
+
+        while (x != other.head) {
+            auto newNode = new Node<T>(x->key);
+            newNode->degree = x->degree;
+            if (other.min == x) {
+                this->min = newNode;
+            }
+            prevNode->right = newNode;
+            newNode->left = prevNode;
+            newNode->right = this->head;
+            this->tail = newNode;
+            this->head->left = this->tail;
+            this->copy(x, newNode);
+
+            prevNode = prevNode->right;
+            x = x->right;
+        }
+
+        return *this;
+    }
+
+    void copyNode(Node<T> &x, Node<T> &root) {
+        auto newNode = new Node<T>(x.child->key);
+    }
+
+    void copy(Node<T> *x, Node<int> *n) {
+        if (x->child != nullptr) {
+            auto newNode = new Node<T>(x->child->key);
+            newNode->degree = x->child->degree;
+            newNode->parent = n;
+            n->child = newNode;
+            copy(x->child, n->child);
+        }
+        if (x->sibling != nullptr) {
+            auto newNode = new Node<T>(x->sibling->key);
+            newNode->degree = x->sibling->degree;
+            n->sibling = newNode;
+            copy(x->sibling, n->sibling);
+        }
     }
 
     T peekKey() {
@@ -254,42 +310,25 @@ public:
 
 
 int main() {string A[10] = {"A","B","C","D","E","F","H","I","J","K"};
-    int B[11] = {10,9,8,7,6,5,4,3,2,1};
+  FibHeap<int> F1;
+  for (int i = 0; i < 5; i ++){
+      F1.insert(i);
+  }
 
-    Heap<int> T1, T2(B,10);
+  F1.extractMin();
 
-    T2.printKey();
-    //Should output  1 2 4 3 6 5 8 10 7 9
+  FibHeap<int> F2;
+  F2 = F1;
 
-    for(int i=0; i<10; i++) T1.insert(B[i]);
+  cout << "should be same"<< endl;
+  F1.printKey();
+  F2.printKey();
 
-    T1.printKey();
-    // Should output 1 2 5 4 3 9 6 10 7 8
+  F1.extractMin();
 
-    T1 = T2;
+  cout << "should be diff" << endl;
 
-   cout << "should be same" << endl;
-   T1.printKey();
-   T2.printKey();
-
-   T1.extractMin();
-
-   cout << "should be different" << endl;
-
-   T1.printKey();
-   T2.printKey();
-
-   Heap<int> T3(T2);
-
-   cout << "should be same" << endl;
-   T2.printKey();
-   T3.printKey();
-
-   cout << "should be different" << endl;
-   T2.extractMin();
-   T2.printKey();
-   T3.printKey();
-
-   cout << "made";
+  F1.printKey();
+  F2.printKey();
 
 }
