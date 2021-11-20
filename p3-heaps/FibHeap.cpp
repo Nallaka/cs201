@@ -65,6 +65,40 @@ public:
         this->min = nullptr;
     }
 
+    FibHeap<T>(const FibHeap<T> &other) {
+        auto x = other.head;
+
+        auto prevNode = new Node<T>(x->key);
+        prevNode->degree = x->degree;
+        this->head = prevNode;
+        this->tail = this->head;
+        this->n = other.n;
+
+        if (other.head == other.min) {
+            this->min = prevNode;
+        }
+
+        this->copy(x, prevNode);
+        x = x->right;
+
+        while (x != other.head) {
+            auto newNode = new Node<T>(x->key);
+            newNode->degree = x->degree;
+            if (other.min == x) {
+                this->min = newNode;
+            }
+            prevNode->right = newNode;
+            newNode->left = prevNode;
+            newNode->right = this->head;
+            this->tail = newNode;
+            this->head->left = this->tail;
+            this->copy(x, newNode);
+
+            prevNode = prevNode->right;
+            x = x->right;
+        }
+    }
+
     FibHeap& operator=(const FibHeap<T> &other) {
         auto x = other.head;
 
@@ -317,8 +351,7 @@ int main() {string A[10] = {"A","B","C","D","E","F","H","I","J","K"};
 
   F1.extractMin();
 
-  FibHeap<int> F2;
-  F2 = F1;
+  FibHeap<int> F2(F1);
 
   cout << "should be same"<< endl;
   F1.printKey();
