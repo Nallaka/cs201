@@ -143,28 +143,6 @@ public:
         }
 
         return z->key;
-        /*auto heapMin = this->min;
-        if (heapMin != nullptr) {
-            auto currNode = heapMin->child;
-            while (currNode != nullptr) {
-                this->tail->right = currNode;
-                currNode->parent = nullptr;
-                currNode->left = this->tail;
-                currNode->right = this->head;
-                this->tail = currNode;
-                currNode->degree--;
-                currNode = currNode->right;
-            }
-            heapMin->left->right = heapMin->right;
-            heapMin->right->left = heapMin->left;
-            if (heapMin == heapMin->right) {
-                this->min = nullptr;
-            } else {
-                this->min = heapMin->right;
-                this->consolidate();
-            }
-            this->n--;
-        }*/
     }
 
     void consolidate() {
@@ -223,57 +201,9 @@ public:
                 }
             }
         }
-/*        auto currNode = this->head;
-        while (currNode->right != this->head) {
-            auto x = currNode;
-            int d = x->degree;
-            while (A[d] != nullptr) {
-                auto y = A[d];
-                if (x->key > y->key) {
-                    auto temp = x;
-                    x = y;
-                    y = temp;
-                }
-                this->fibHeapLink(y, x);
-                A[d] = nullptr;
-                d++;
-            }
-            A[d] = x;
-            currNode = currNode->right;
-        }
-        this->min = nullptr;
-        for (int i = 0; i < 50; i++) {
-            if (A[i] != nullptr) {
-                if (this->min == nullptr) {
-                    this->head = A[i];
-                    this->tail = A[i];
-                    this->head->left = A[i];
-                    this->head->right = A[i];
-                    this->min = A[i];
-                } else {
-                    this->tail->right = A[i];
-                    A[i]->left = this->tail;
-                    A[i]->right = this->head;
-                    this->tail = A[i];
-                    if (A[i]->key < this->min->key) {
-                        this->min = A[i];
-                    }
-                }
-            }
-        }*/
-
     }
 
     void fibHeapLink(Node<T>* y, Node<T>* x) {
-        /*if (this->head == y) {
-            this->head = y->right;
-            this->tail->right = this->head;
-        }
-
-        if (this->tail == y) {
-            this->tail = y->left;
-            this->head->left = this->tail;
-        }*/
         y->left->right = y->right;
         y->right->left = y->left;
         y->parent = x;
@@ -291,12 +221,6 @@ public:
             this->head->left = this->tail;
         }
 
-        /*y->right->left = y->left;
-        y->left->right = y->right;
-        y->sibling = x->child;
-        x->child = y;
-        y->parent = x;
-        x->degree++;*/
     }
 
     void printKey() {
@@ -330,7 +254,7 @@ public:
 
 
 int main() {string A[10] = {"A","B","C","D","E","F","H","I","J","K"};
-    int B[10] = {10,9,8,7,6,5,4,3,2,1};
+    int B[11] = {10,9,8,7,6,5,4,3,2,1};
 
     Heap<int> T1, T2(B,10);
 
@@ -342,108 +266,30 @@ int main() {string A[10] = {"A","B","C","D","E","F","H","I","J","K"};
     T1.printKey();
     // Should output 1 2 5 4 3 9 6 10 7 8
 
-    cout << T2.peekKey() << endl;
-    //Should output 1
+    T1 = T2;
 
-    cout << T1.extractMin() << endl;
-    //Should output 1
+   cout << "should be same" << endl;
+   T1.printKey();
+   T2.printKey();
 
-    T1.printKey();
-    //Should output 2 3 5 4 8 9 6 10 7
+   T1.extractMin();
 
+   cout << "should be different" << endl;
 
-    FibHeap<string> X(A,10), Y;
+   T1.printKey();
+   T2.printKey();
 
-    X.printKey();
-    //Should output
-    //B1
-    //J K
-    //
-    //B3
-    //A E H I F C D B
+   Heap<int> T3(T2);
 
-    cout << X.extractMin() << endl;
-    //Should output A
+   cout << "should be same" << endl;
+   T2.printKey();
+   T3.printKey();
 
-    X.printKey();
-    //Should output
-    //B0
-    //B
-    //
-    //B3
-    //C E H I F J K D
+   cout << "should be different" << endl;
+   T2.extractMin();
+   T2.printKey();
+   T3.printKey();
 
-    X.insert("Z");
-    X.insert("A");
-    X.insert("P");
-
-    X.printKey();
-    //Should output
-    //B0
-    //B
-    //
-    //B3
-    //C E H I F J K D
-    //
-    //B0
-    //Z
-    //
-    //B0
-    //A
-    //
-    //B0
-    //P
-
-
-
-    Y.insert("M");
-    Y.insert("O");
-    Y.insert("G");
-    Y.insert("N");
-    Y.insert("L");
-    Y.insert("A");
-    Y.extractMin();
-
-    Y.printKey();
-    //Should output
-    //B0
-    //L
-    //
-    //B2
-    //G M O N
-
-    Y.merge(X);
-    cout << Y.peekKey() << endl;
-    //Should output A
-
-    Y.printKey();
-    //Should output
-    //B0
-    //L
-    //
-    //B2
-    //G M O N
-    //
-    //B0
-    //B
-    //
-    //B3
-    //C E H I F J K D
-    //
-    //B0
-    //Z
-    //
-    //B0
-    //A
-    //
-    //B0
-    //P
-
-    Y.extractMin();
-
-    Y.printKey();
-    //Should output
-    //B4
-    //B C E H I F J K D G M O N P Z L
+   cout << "made";
 
 }
