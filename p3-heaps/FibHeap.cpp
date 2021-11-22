@@ -2,7 +2,6 @@
 // Created by MIthul Nallaka on 11/9/21.
 //
 #include "iostream"
-#include "Heap.cpp"
 using namespace std;
 
 template <class T>
@@ -139,7 +138,7 @@ public:
         auto newNode = new Node<T>(x.child->key);
     }
 
-    void copy(Node<T> *x, Node<int> *n) {
+    void copy(Node<T> *x, Node<T> *n) {
         if (x->child != nullptr) {
             auto newNode = new Node<T>(x->child->key);
             newNode->degree = x->child->degree;
@@ -224,15 +223,18 @@ public:
 
             if (z == z->right) {
                 this->min = nullptr;
+                this->head = nullptr;
+                this->tail = nullptr;
             } else {
                 this->min = z->right;
                 this->consolidate();
             }
 
             this->n--;
+            return z->key;
+        } else {
+            return T();
         }
-
-        return z->key;
     }
 
     void consolidate() {
@@ -319,7 +321,6 @@ public:
         do {
             cout << "B" << x->degree << endl;
             inorder(*x);
-            //TODO: Print children Inorder include endl
 
             cout << endl << endl;
 
@@ -341,27 +342,3 @@ public:
         }
     }
 };
-
-
-int main() {string A[10] = {"A","B","C","D","E","F","H","I","J","K"};
-  FibHeap<int> F1;
-  for (int i = 0; i < 5; i ++){
-      F1.insert(i);
-  }
-
-  F1.extractMin();
-
-  FibHeap<int> F2(F1);
-
-  cout << "should be same"<< endl;
-  F1.printKey();
-  F2.printKey();
-
-  F1.extractMin();
-
-  cout << "should be diff" << endl;
-
-  F1.printKey();
-  F2.printKey();
-
-}
