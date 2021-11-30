@@ -506,15 +506,15 @@ public:
         cout << endl;
     }
 
-    T parent(int i) {
+    int parent(int i) {
         return (i-1)/2;
     }
 
-    T left(int i) {
+    int left(int i) {
         return 2*i + 1;
     }
 
-    T right(int i) {
+    int right(int i) {
         return 2*i + 2;
     }
 

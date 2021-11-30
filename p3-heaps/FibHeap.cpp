@@ -243,6 +243,7 @@ public:
             i = nullptr;
         }
 
+        auto oldHead = this->head;
         auto w = this->head;
 
         do {
@@ -267,7 +268,7 @@ public:
                 w = w->right;
             }
 
-        } while(w != this->head);
+        } while(w != this->head && w != oldHead);
 
         this->min = nullptr;
 
@@ -296,13 +297,6 @@ public:
     }
 
     void fibHeapLink(Node<T>* y, Node<T>* x) {
-        y->left->right = y->right;
-        y->right->left = y->left;
-        y->parent = x;
-        y->sibling = x->child;
-        x->child = y;
-        x->degree++;
-
         if (this->head == y) {
             this->head = y->right;
             this->tail->right = this->head;
@@ -312,7 +306,12 @@ public:
             this->tail = y->left;
             this->head->left = this->tail;
         }
-
+        y->left->right = y->right;
+        y->right->left = y->left;
+        y->parent = x;
+        y->sibling = x->child;
+        x->child = y;
+        x->degree++;
     }
 
     void printKey() {
